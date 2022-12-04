@@ -16,7 +16,6 @@ public class ChessMatch {
 		private int turn;
 		private Color currentPlayer;
 		private boolean checkMate;
-		private ChessPiece enPassantVulnerable;
 		private ChessPiece promoted;
 		public ChessMatch() {
 			board = new Board(8,8);
