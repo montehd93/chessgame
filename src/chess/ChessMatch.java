@@ -68,14 +68,18 @@ public class ChessMatch {
 		public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 			Position source = sourcePosition.toPosition();
 			Position target = targetPosition.toPosition();
-			validateSourcePosition(source);
+			/*Convertendo padrão de xadrez para matriz */
+			validateSourcePosition(source); //Validamos a origem, visto que o destino é verificado no removePiece
 			Piece capturedPiece = makeMove(source, target);
 			return (ChessPiece)capturedPiece;
 		}
 		
 		private void validateSourcePosition(Position position) {
 			if (!board.thereIsAPiece(position)) {
-				throw new ChessException("Não possui nenhuma peça na posição de origem");
+				throw new ChessException("Nao possui nenhuma peça na posicao de origem");
+			}
+			if(!board.piece(position).isThereAnyPossibleMove()) {
+				throw new ChessException("Nenhum movimento para a peca escolhida");
 			}
 		}
 		
