@@ -19,9 +19,17 @@ public class ChessMatch {
 		private ChessPiece promoted;
 		public ChessMatch() {
 			board = new Board(8,8);
+			turn = 1;
+			currentPlayer = Color.WHITE;
 			initialSetup();
 		}
 		
+		public int getTurn() {
+			return turn;
+		}
+		public Color getCurrentPlayer() {
+			return currentPlayer;
+		}
 		public ChessPiece[][] getPieces(){
 			ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
 			for(int i=0; i<board.getRows(); i++) {
@@ -44,9 +52,9 @@ public class ChessMatch {
 			placeNewPiece('f',8,new Bishop(board, Color.WHITE));
 			placeNewPiece('g',8,new Knight(board, Color.WHITE));
 			placeNewPiece('h',8,new Rook(board, Color.WHITE));
-			for (int i=0; i<=7; i++) {
-				board.placePiece(new Pawn(board, Color.WHITE), new Position(1,i));
-			}
+//			for (int i=0; i<=7; i++) {
+//				board.placePiece(new Pawn(board, Color.WHITE), new Position(1,i));
+//			}
 			placeNewPiece('a',1,new Rook(board, Color.BLACK));
 			placeNewPiece('b',1,new Knight(board, Color.BLACK));
 			placeNewPiece('c',1,new Bishop(board, Color.BLACK));
@@ -55,14 +63,16 @@ public class ChessMatch {
 			placeNewPiece('f',1,new Bishop(board, Color.BLACK));
 			placeNewPiece('g',1,new Knight(board, Color.BLACK));
 			placeNewPiece('h',1,new Rook(board, Color.BLACK));
-			for (int i=0; i<=7; i++) {
-				board.placePiece(new Pawn(board, Color.BLACK), new Position(6,i));
-			}
+//			for (int i=0; i<=7; i++) {
+//				board.placePiece(new Pawn(board, Color.BLACK), new Position(6,i));
+//			}
 			
 		}
 		
 		public boolean[][] possibleMoves(ChessPosition sourcePosition){
-			return null;
+			Position position = sourcePosition.toPosition();
+			validateSourcePosition(position);
+			return board.piece(position).possibleMoves();
 			
 		}
 		public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
@@ -72,6 +82,7 @@ public class ChessMatch {
 			validateSourcePosition(source); //Validamos a origem, visto que o destino é verificado no removePiece
 			validateTargetPosition(source,target);
 			Piece capturedPiece = makeMove(source, target);
+			nextTurn();
 			return (ChessPiece)capturedPiece;
 		}
 		
@@ -86,9 +97,16 @@ public class ChessMatch {
 			if (!board.thereIsAPiece(position)) {
 				throw new ChessException("Nao possui nenhuma peça na posicao de origem");
 			}
+			if(currentPlayer != ((ChessPiece)board.piece(position)).getColor()) {
+				throw new ChessException("Voce esta tentando mover uma peca do adversario");
+			}
 			if(!board.piece(position).isThereAnyPossibleMove()) {
 				throw new ChessException("Nenhum movimento para a peca escolhida");
 			}
+		}
+		private void nextTurn() {
+			turn++;
+			currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
 		}
 		
 		private Piece makeMove(Position source, Position target) {
